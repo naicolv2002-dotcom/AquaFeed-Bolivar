@@ -1,0 +1,375 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#f27c65">
+  <title>AquaFeed | Gestión inteligente del cultivo</title>
+  <style>
+    :root {
+      --coral: #f27c65;
+      --coral-deep: #d95d52;
+      --orange: #f6a64d;
+      --gold: #ffd17b;
+      --violet: #7968a8;
+      --ink: #243a45;
+      --muted: #6d7d84;
+      --cream: #fffaf4;
+      --paper: #ffffff;
+      --line: #f0e5dc;
+      --teal: #2d8a83;
+      --shadow: 0 18px 48px rgba(89, 67, 65, .10);
+    }
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; scroll-padding-top: 92px; }
+    body {
+      margin: 0; color: var(--ink);
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      background: linear-gradient(180deg, #fffaf4 0%, #fff 46%, #fff8f2 100%);
+      line-height: 1.6;
+    }
+    a { color: inherit; text-decoration: none; }
+    button, input, select { font: inherit; }
+    button { cursor: pointer; }
+    .top-glow {
+      position: absolute; inset: 0 0 auto; height: 610px; z-index: -1; overflow: hidden;
+      background: linear-gradient(125deg, #ffe0b6 0%, #f9b18e 28%, #f27c75 57%, #a18ab9 100%);
+      border-radius: 0 0 52px 52px;
+    }
+    .top-glow::before, .top-glow::after {
+      content: ""; position: absolute; border-radius: 50%; filter: blur(2px);
+      background: rgba(255,255,255,.18);
+    }
+    .top-glow::before { width: 430px; height: 430px; right: -70px; top: -170px; }
+    .top-glow::after { width: 260px; height: 260px; left: 25%; top: 290px; }
+    .nav-wrap { max-width: 1160px; margin: auto; padding: 20px 24px 0; }
+    nav {
+      display: flex; align-items: center; justify-content: space-between; gap: 22px;
+      padding: 12px 16px; border: 1px solid rgba(255,255,255,.48);
+      border-radius: 20px; background: rgba(255,255,255,.76);
+      backdrop-filter: blur(14px); box-shadow: 0 8px 28px rgba(90,55,54,.07);
+    }
+    .brand { display: flex; align-items: center; gap: 11px; font-weight: 850; letter-spacing: -.6px; font-size: 1.18rem; white-space: nowrap; }
+    .brand-mark {
+      width: 43px; height: 43px; border-radius: 15px; display: grid; place-items: center;
+      background: linear-gradient(145deg, #ffca79, #f47769 65%, #b078a0);
+      box-shadow: inset 0 1px 0 rgba(255,255,255,.65), 0 5px 12px rgba(217,93,82,.22);
+    }
+    .brand-mark svg { width: 30px; height: 30px; }
+    .brand span { color: var(--coral-deep); }
+    .nav-links { display: flex; gap: 5px; align-items: center; flex-wrap: wrap; justify-content: flex-end; }
+    .nav-links a { padding: 9px 12px; font-size: .88rem; font-weight: 650; color: #52656c; border-radius: 12px; transition: .2s; }
+    .nav-links a:hover { color: var(--coral-deep); background: #fff0e8; }
+    .hero { max-width: 1160px; margin: auto; padding: 82px 24px 86px; display: grid; grid-template-columns: 1.12fr .88fr; gap: 40px; align-items: center; }
+    .eyebrow { display: inline-flex; align-items: center; gap: 8px; padding: 7px 12px; border-radius: 100px; background: rgba(255,255,255,.55); border: 1px solid rgba(255,255,255,.65); font-size: .78rem; font-weight: 800; letter-spacing: .08em; text-transform: uppercase; color: #754f55; }
+    .eyebrow i { width: 7px; height: 7px; border-radius: 50%; background: var(--teal); box-shadow: 0 0 0 4px rgba(45,138,131,.12); }
+    h1 { font-size: clamp(2.7rem, 5.1vw, 4.8rem); line-height: 1.02; letter-spacing: -.065em; margin: 22px 0 20px; max-width: 680px; }
+    h1 .gradient-text { color: #9d4e59; background: linear-gradient(90deg, #c95156, #a65f78 55%, #655b9a); -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent; }
+    .hero-copy { max-width: 570px; color: #5d626d; font-size: 1.08rem; }
+    .hero-actions { display: flex; gap: 12px; flex-wrap: wrap; margin-top: 28px; }
+    .btn { border: 0; border-radius: 14px; padding: 13px 19px; font-weight: 800; display: inline-flex; justify-content: center; align-items: center; gap: 9px; transition: transform .2s, box-shadow .2s; }
+    .btn:hover { transform: translateY(-2px); }
+    .btn-primary { color: white; background: linear-gradient(110deg, #e96860, #e98d59 75%, #d9a05c); box-shadow: 0 10px 22px rgba(217,93,82,.23); }
+    .btn-secondary { background: rgba(255,255,255,.72); color: #694e59; border: 1px solid rgba(255,255,255,.8); }
+    .hero-note { margin-top: 20px; color: #725d65; font-size: .87rem; }
+    .hero-visual { min-height: 350px; display: grid; place-items: center; position: relative; }
+    .sun-disc {
+      width: min(330px, 80vw); aspect-ratio: 1; border-radius: 50%;
+      background: linear-gradient(155deg, #ffe6a4 0%, #ffb17c 42%, #f27d77 72%, #9c84b6 100%);
+      box-shadow: 0 30px 65px rgba(176,95,97,.23), inset 0 3px 8px rgba(255,255,255,.45);
+      display: grid; place-items: center; position: relative;
+    }
+    .sun-disc::before { content: ""; position: absolute; inset: 18px; border: 1px solid rgba(255,255,255,.48); border-radius: 50%; }
+    .sun-disc svg { width: 73%; height: 73%; filter: drop-shadow(0 12px 12px rgba(117,59,68,.19)); }
+    .float-card { position: absolute; background: rgba(255,255,255,.88); backdrop-filter: blur(12px); border: 1px solid rgba(255,255,255,.9); border-radius: 17px; padding: 13px 16px; box-shadow: var(--shadow); font-size: .83rem; }
+    .float-card strong { display: block; font-size: .95rem; }
+    .float-card small { color: var(--muted); }
+    .float-one { top: 27px; left: -3px; }
+    .float-two { right: -2px; bottom: 27px; }
+    .float-icon { display: inline-grid; place-items: center; width: 30px; height: 30px; border-radius: 10px; background: #fff0df; margin-right: 7px; }
+    main { max-width: 1160px; margin: auto; padding: 0 24px 70px; }
+    .stats { display: grid; grid-template-columns: repeat(3,1fr); gap: 16px; margin-top: -24px; position: relative; }
+    .stat { background: rgba(255,255,255,.94); border: 1px solid var(--line); border-radius: 20px; padding: 22px; box-shadow: 0 10px 30px rgba(72,56,54,.05); display: flex; align-items: center; gap: 15px; }
+    .stat-icon { flex: 0 0 48px; width: 48px; height: 48px; display: grid; place-items: center; border-radius: 15px; font-size: 1.4rem; background: linear-gradient(145deg, #fff0dc, #ffe1d8); }
+    .stat strong { display: block; font-size: 1.35rem; line-height: 1.2; letter-spacing: -.04em; }
+    .stat small { color: var(--muted); font-size: .85rem; }
+    section { margin-top: 76px; }
+    .section-heading { display: flex; justify-content: space-between; align-items: end; gap: 22px; margin-bottom: 24px; }
+    .kicker { color: var(--coral-deep); font-size: .77rem; font-weight: 850; text-transform: uppercase; letter-spacing: .13em; }
+    h2 { margin: 5px 0 8px; font-size: clamp(1.8rem, 3vw, 2.55rem); line-height: 1.13; letter-spacing: -.05em; }
+    .section-heading p { margin: 0; color: var(--muted); max-width: 620px; }
+    .panel { border: 1px solid var(--line); background: var(--paper); border-radius: 24px; padding: clamp(20px, 3vw, 32px); box-shadow: 0 12px 34px rgba(69,53,52,.055); }
+    .panel-head { display: flex; align-items: center; gap: 13px; padding-bottom: 22px; margin-bottom: 23px; border-bottom: 1px solid #f4ebe5; }
+    .panel-symbol { width: 46px; height: 46px; border-radius: 15px; display: grid; place-items: center; font-size: 1.35rem; background: linear-gradient(145deg, #ffe6c0, #ffd6d0); }
+    .panel-head h3 { margin: 0; font-size: 1.16rem; letter-spacing: -.025em; }
+    .panel-head p { margin: 2px 0 0; font-size: .88rem; color: var(--muted); }
+    .form-grid { display: grid; grid-template-columns: repeat(3, minmax(0,1fr)); gap: 17px; }
+    .field { display: flex; flex-direction: column; gap: 7px; }
+    .field label { font-size: .84rem; font-weight: 750; color: #53656b; }
+    .field input, .field select { width: 100%; min-width: 0; padding: 12px 13px; border: 1px solid #e9e0d9; background: #fffdfb; color: var(--ink); border-radius: 12px; outline: none; transition: border .2s, box-shadow .2s; }
+    .field input:focus, .field select:focus { border-color: #ee9a81; box-shadow: 0 0 0 4px rgba(242,124,101,.12); }
+    .form-actions { margin-top: 23px; display: flex; gap: 12px; flex-wrap: wrap; align-items: center; }
+    .hint { color: var(--muted); font-size: .83rem; }
+    .result { display: none; margin-top: 22px; padding: 20px; border-radius: 17px; border: 1px solid #dcebe5; background: linear-gradient(120deg, #f0faf4, #fff9ed); }
+    .result.visible { display: block; }
+    .result h4 { margin: 0 0 9px; }
+    .result p { margin: 6px 0; color: #4d6563; }
+    .result-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 12px; margin-top: 14px; }
+    .result-metric { padding: 13px; background: rgba(255,255,255,.8); border: 1px solid #e1eee8; border-radius: 12px; }
+    .result-metric small { display: block; color: var(--muted); }
+    .result-metric strong { font-size: 1.1rem; }
+    .steps { display: grid; grid-template-columns: repeat(3,1fr); gap: 16px; }
+    .step-card { padding: 23px; border: 1px solid var(--line); border-radius: 20px; background: linear-gradient(150deg, #fff 0%, #fffaf6 100%); }
+    .step-num { display: grid; place-items: center; width: 42px; height: 42px; border-radius: 14px; color: #9a4f5a; background: linear-gradient(140deg, #ffe3b2, #ffd5d0); font-weight: 900; }
+    .step-card h3 { margin: 17px 0 6px; font-size: 1.08rem; }
+    .step-card p { margin: 0; color: var(--muted); font-size: .91rem; }
+    .phase-grid { display: grid; grid-template-columns: repeat(6,1fr); gap: 12px; }
+    .phase { text-align: center; padding: 18px 10px; border: 1px solid var(--line); border-radius: 17px; background: #fff; }
+    .phase .emoji { font-size: 1.7rem; }
+    .phase strong { display: block; margin-top: 7px; font-size: .9rem; }
+    .phase small { color: var(--muted); font-size: .77rem; }
+    .sources { overflow: hidden; border: 1px solid var(--line); border-radius: 18px; }
+    .source-row { display: grid; grid-template-columns: .55fr 2fr 1.4fr; gap: 18px; padding: 16px 20px; background: #fff; border-bottom: 1px solid #f1e8e1; font-size: .9rem; }
+    .source-row:last-child { border-bottom: 0; }
+    .source-row.head { background: linear-gradient(90deg, #fff0df, #fff0ed); color: #8b5558; font-weight: 850; }
+    .empty-sources { padding: 22px; color: var(--muted); background: white; }
+    footer { margin-top: 70px; padding: 30px 24px; background: #2c3e49; color: #e9edef; }
+    .footer-inner { max-width: 1160px; margin: auto; display: flex; justify-content: space-between; gap: 24px; align-items: center; }
+    .footer-brand { font-weight: 850; font-size: 1.1rem; }
+    footer p { color: #c1ccd0; font-size: .83rem; margin: 5px 0 0; }
+    .footer-pill { border: 1px solid #5e7078; border-radius: 99px; padding: 8px 12px; font-size: .78rem; color: #e7d4c7; white-space: nowrap; }
+    @media (max-width: 850px) {
+      .hero { grid-template-columns: 1fr; padding-top: 60px; gap: 20px; }
+      .hero-visual { min-height: 300px; }
+      .sun-disc { width: 265px; }
+      .nav-wrap { padding: 12px 14px 0; }
+      nav { align-items: flex-start; flex-direction: column; }
+      .nav-links { justify-content: flex-start; }
+      .form-grid { grid-template-columns: repeat(2,minmax(0,1fr)); }
+      .phase-grid { grid-template-columns: repeat(3,1fr); }
+      .stats { margin-top: -10px; }
+    }
+    @media (max-width: 560px) {
+      .nav-links a { padding: 7px 9px; font-size: .81rem; }
+      .hero { padding: 47px 19px 68px; }
+      main { padding: 0 16px 48px; }
+      .stats { grid-template-columns: 1fr; }
+      .stat { padding: 16px; }
+      .section-heading { align-items: flex-start; flex-direction: column; }
+      .form-grid, .steps, .result-grid { grid-template-columns: 1fr; }
+      .phase-grid { grid-template-columns: repeat(2,1fr); }
+      .source-row { grid-template-columns: 1fr; gap: 3px; }
+      .source-row.head { display: none; }
+      .footer-inner { align-items: flex-start; flex-direction: column; }
+      .float-one { left: -4px; top: 6px; }
+      .float-two { right: -3px; bottom: 4px; }
+    }
+  </style>
+</head>
+<body>
+  <div class="top-glow" aria-hidden="true"></div>
+  <div class="nav-wrap">
+    <nav aria-label="Navegación principal">
+      <a class="brand" href="#inicio" aria-label="AquaFeed, inicio">
+        <span class="brand-mark">
+          <svg viewBox="0 0 64 64" fill="none" aria-hidden="true">
+            <path d="M12 34c2-11 13-19 26-17 7 1 12 5 14 11l-7 8-9 1-8 8-9-2-7-9Z" fill="#FFF7E9" stroke="#8E4558" stroke-width="2.6" stroke-linejoin="round"/>
+            <path d="M48 27l8-5-2 11-9 3M25 19l-4-7m10 5-1-8M18 27l-7-3" stroke="#8E4558" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+            <path d="M21 42l-4 8m12-7-1 9m8-13 4 8m-25-13-7 4" stroke="#8E4558" stroke-width="2.5" stroke-linecap="round"/>
+            <circle cx="42" cy="25" r="2.2" fill="#8E4558"/>
+            <path d="M31 25c-3 5-2 10 3 12" stroke="#E77B69" stroke-width="2.5" stroke-linecap="round"/>
+          </svg>
+        </span>
+        Aqua<span>Feed</span>
+      </a>
+      <div class="nav-links">
+        <a href="#inicio">Inicio</a>
+        <a href="#diagnostico">Diagnóstico</a>
+        <a href="#alimentacion">Alimentación</a>
+        <a href="#etapas">Etapas</a>
+        <a href="#fuentes">Fuentes</a>
+      </div>
+    </nav>
+  </div>
+
+  <header class="hero" id="inicio">
+    <div>
+      <div class="eyebrow"><i></i> Tecnología para la acuicultura</div>
+      <h1>Decisiones más claras para un <span class="gradient-text">cultivo saludable.</span></h1>
+      <p class="hero-copy">AquaFeed acompaña a pequeños productores de camarón con herramientas prácticas para revisar la calidad del agua, comprender el desarrollo del cultivo y estimar la alimentación diaria.</p>
+      <div class="hero-actions">
+        <a class="btn btn-primary" href="#diagnostico">Analizar mi cultivo <span aria-hidden="true">↗</span></a>
+        <a class="btn btn-secondary" href="#alimentacion">Calcular alimentación</a>
+      </div>
+      <p class="hero-note">🦐 Diseñada pensando en productores de <em>Penaeus vannamei</em> · Bolívar, Colombia</p>
+    </div>
+    <div class="hero-visual" aria-label="Emblema ilustrado de un camarón sobre un sol de atardecer">
+      <div class="sun-disc">
+        <svg viewBox="0 0 320 320" fill="none" aria-hidden="true">
+          <path d="M85 170c-4-30 18-61 54-72 34-10 68 4 80 31l-16 25-26 12-22 27-25-2-25-10-20-11Z" fill="#FFF8EC" stroke="#984D5A" stroke-width="7" stroke-linejoin="round"/>
+          <path d="M211 128l34-22-7 37-35 12M119 106l-13-23m34 12 1-28M92 139l-28-9" stroke="#984D5A" stroke-width="7" stroke-linecap="round" stroke-linejoin="round"/>
+          <path d="M111 194l-17 29m44-23-5 35m34-42 14 29m-67-62-29 16" stroke="#984D5A" stroke-width="7" stroke-linecap="round"/>
+          <circle cx="191" cy="117" r="6" fill="#984D5A"/>
+          <path d="M157 117c-12 15-10 34 8 45" stroke="#E98370" stroke-width="7" stroke-linecap="round"/>
+          <path d="M93 166c12 16 31 26 51 27" stroke="#E5A15D" stroke-width="6" stroke-linecap="round"/>
+          <path d="M145 197c25 8 52 0 65-18" stroke="#984D5A" stroke-width="5" stroke-linecap="round"/>
+        </svg>
+      </div>
+      <div class="float-card float-one"><span class="float-icon">🌡️</span><strong>Calidad del agua</strong><small>Monitoreo de variables</small></div>
+      <div class="float-card float-two"><span class="float-icon">🌱</span><strong>Mejores decisiones</strong><small>Datos que orientan</small></div>
+    </div>
+  </header>
+
+  <main>
+    <div class="stats" aria-label="Características de AquaFeed">
+      <div class="stat"><div class="stat-icon">🌡️</div><div><strong>10+</strong><small>variables de calidad del agua</small></div></div>
+      <div class="stat"><div class="stat-icon">🦐</div><div><strong>6 fases</strong><small>principales del desarrollo</small></div></div>
+      <div class="stat"><div class="stat-icon">🍽️</div><div><strong>Dinámica</strong><small>estimación por biomasa y etapa</small></div></div>
+    </div>
+
+    <section id="diagnostico">
+      <div class="section-heading">
+        <div><div class="kicker">01 · Monitoreo</div><h2>Diagnóstico del cultivo</h2></div>
+        <p>Registra los parámetros de tu estanque para obtener una orientación inicial y detectar datos que conviene revisar.</p>
+      </div>
+      <div class="panel">
+        <div class="panel-head"><div class="panel-symbol">🌊</div><div><h3>Parámetros del agua</h3><p>Completa los valores que tengas disponibles.</p></div></div>
+        <form id="diagnosisForm">
+          <div class="form-grid">
+            <div class="field"><label for="stage">Etapa del cultivo</label><select id="stage"><option>Postlarva</option><option>Juvenil</option><option>Engorde</option><option>Cosecha</option></select></div>
+            <div class="field"><label for="system">Sistema de cultivo</label><select id="system"><option>Estanque convencional</option><option>Biofloc</option><option>Intensivo</option><option>Extensivo</option></select></div>
+            <div class="field"><label for="salinity">Salinidad (ppt)</label><input id="salinity" type="number" step="any" min="0" placeholder="Ej. 20"></div>
+            <div class="field"><label for="temperature">Temperatura (°C)</label><input id="temperature" type="number" step="any" placeholder="Ej. 29"></div>
+            <div class="field"><label for="ph">pH</label><input id="ph" type="number" step="any" placeholder="Ej. 7.8"></div>
+            <div class="field"><label for="oxygen">Oxígeno disuelto (mg/L)</label><input id="oxygen" type="number" step="any" min="0" placeholder="Ej. 5.2"></div>
+            <div class="field"><label for="tan">TAN (mg/L)</label><input id="tan" type="number" step="any" min="0" placeholder="Ej. 0.2"></div>
+            <div class="field"><label for="nitrite">Nitrito (mg/L)</label><input id="nitrite" type="number" step="any" min="0" placeholder="Ej. 0.1"></div>
+            <div class="field"><label for="nitrate">Nitrato (mg/L)</label><input id="nitrate" type="number" step="any" min="0" placeholder="Ej. 10"></div>
+            <div class="field"><label for="alkalinity">Alcalinidad (mg CaCO₃/L)</label><input id="alkalinity" type="number" step="any" min="0" placeholder="Ej. 120"></div>
+            <div class="field"><label for="tss">TSS (mg/L, biofloc)</label><input id="tss" type="number" step="any" min="0" placeholder="Opcional"></div>
+            <div class="field"><label for="solids">Sólidos sedimentables (mL/L)</label><input id="solids" type="number" step="any" min="0" placeholder="Opcional"></div>
+          </div>
+          <div class="form-actions"><button class="btn btn-primary" type="submit">Analizar parámetros <span aria-hidden="true">→</span></button><span class="hint">Los resultados son orientativos, no un diagnóstico profesional.</span></div>
+        </form>
+        <div id="diagnosisResult" class="result" role="status" aria-live="polite"></div>
+      </div>
+    </section>
+
+    <section id="alimentacion">
+      <div class="section-heading">
+        <div><div class="kicker">02 · Nutrición</div><h2>Calculadora de alimentación</h2></div>
+        <p>Estima la biomasa y la cantidad de alimento diaria a partir del número de camarones, su peso promedio y la tasa de alimentación.</p>
+      </div>
+      <div class="panel">
+        <div class="panel-head"><div class="panel-symbol">🍽️</div><div><h3>Plan diario estimado</h3><p>Introduce los datos de tu población y alimento.</p></div></div>
+        <form id="feedForm">
+          <div class="form-grid">
+            <div class="field"><label for="count">Número de camarones</label><input id="count" type="number" min="1" step="1" required placeholder="Ej. 50000"></div>
+            <div class="field"><label for="weight">Peso promedio (g)</label><input id="weight" type="number" min="0.01" step="any" required placeholder="Ej. 12"></div>
+            <div class="field"><label for="rate">Tasa de alimentación (%/día)</label><input id="rate" type="number" min="0" max="100" step="any" required placeholder="Ej. 3"></div>
+            <div class="field"><label for="meals">Comidas por día</label><input id="meals" type="number" min="1" max="24" step="1" required value="4"></div>
+            <div class="field"><label for="protein">Proteína del alimento (% CP)</label><input id="protein" type="number" min="0" max="100" step="any" placeholder="Ej. 35"></div>
+            <div class="field"><label for="feedType">Tipo de alimento</label><select id="feedType"><option>Balanceado comercial</option><option>Precría</option><option>Engorde</option><option>Otro</option></select></div>
+          </div>
+          <div class="form-actions"><button class="btn btn-primary" type="submit">Calcular ración <span aria-hidden="true">→</span></button><span class="hint">Verifica la ración con el técnico y ajusta según consumo real.</span></div>
+        </form>
+        <div id="feedResult" class="result" role="status" aria-live="polite"></div>
+      </div>
+    </section>
+
+    <section id="etapas">
+      <div class="section-heading">
+        <div><div class="kicker">03 · Desarrollo</div><h2>Etapas del cultivo</h2></div>
+        <p>Una vista general del ciclo productivo del camarón. Los tiempos y requerimientos varían según el sistema y las condiciones del cultivo.</p>
+      </div>
+      <div class="steps">
+        <article class="step-card"><div class="step-num">01</div><h3>Preparación</h3><p>Acondicionamiento del estanque, revisión del agua y preparación del sistema antes de la siembra.</p></article>
+        <article class="step-card"><div class="step-num">02</div><h3>Siembra y aclimatación</h3><p>Recepción de postlarvas y adaptación gradual a las condiciones del agua del cultivo.</p></article>
+        <article class="step-card"><div class="step-num">03</div><h3>Precría y engorde</h3><p>Seguimiento de crecimiento, supervivencia, consumo y calidad del agua durante el desarrollo.</p></article>
+      </div>
+      <div class="phase-grid" style="margin-top:16px">
+        <div class="phase"><div class="emoji">🫧</div><strong>Postlarva</strong><small>Adaptación</small></div>
+        <div class="phase"><div class="emoji">🦐</div><strong>Juvenil</strong><small>Crecimiento</small></div>
+        <div class="phase"><div class="emoji">🌱</div><strong>Preengorde</strong><small>Transición</small></div>
+        <div class="phase"><div class="emoji">🍤</div><strong>Engorde</strong><small>Biomasa</small></div>
+        <div class="phase"><div class="emoji">📊</div><strong>Seguimiento</strong><small>Muestreo</small></div>
+        <div class="phase"><div class="emoji">🧺</div><strong>Cosecha</strong><small>Planificación</small></div>
+      </div>
+    </section>
+
+    <section id="fuentes">
+      <div class="section-heading">
+        <div><div class="kicker">04 · Consulta</div><h2>Fuentes bibliográficas</h2></div>
+        <p>Espacio para documentar las guías técnicas y referencias que respaldan los rangos y recomendaciones usados por la plataforma.</p>
+      </div>
+      <div class="sources">
+        <div class="source-row head"><span>ID</span><span>Referencia</span><span>Aplicación</span></div>
+        <div class="empty-sources">Añade aquí las referencias bibliográficas verificadas que utiliza tu proyecto. Esta versión visual no inventa citas ni rangos técnicos.</div>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    <div class="footer-inner">
+      <div><div class="footer-brand">🦐 AquaFeed</div><p>Asistente digital para pequeños productores de camarón · Bolívar, Colombia</p><p>Prototipo académico. Las herramientas ofrecen estimaciones orientativas y no sustituyen asesoría profesional.</p></div>
+      <div class="footer-pill">Cultivo responsable · Datos para decidir</div>
+    </div>
+  </footer>
+
+  <script>
+    const numberValue = id => {
+      const raw = document.getElementById(id).value.trim();
+      return raw === '' ? null : Number(raw);
+    };
+    const fmt = (n, digits = 2) => new Intl.NumberFormat('es-CO', { maximumFractionDigits: digits }).format(n);
+    document.getElementById('diagnosisForm').addEventListener('submit', event => {
+      event.preventDefault();
+      const checks = [
+        ['temperature', 'Temperatura', v => v >= 27 && v <= 32, 'Revisa la temperatura y compárala con la guía técnica de tu sistema.'],
+        ['ph', 'pH', v => v >= 7.5 && v <= 8.5, 'Verifica el pH y observa su variación durante el día.'],
+        ['oxygen', 'Oxígeno disuelto', v => v >= 5, 'Conviene revisar la aireación y medir nuevamente, especialmente al amanecer.'],
+        ['salinity', 'Salinidad', v => v >= 0 && v <= 40, 'Confirma la medición y revisa la adaptación de los animales a la salinidad.'],
+        ['tan', 'TAN', v => v >= 0 && v <= 1, 'Revisa el TAN junto con pH, temperatura y el manejo del sistema.'],
+        ['nitrite', 'Nitrito', v => v >= 0 && v <= 1, 'Verifica el nitrito y consulta los rangos adecuados para tu sistema.'],
+        ['alkalinity', 'Alcalinidad', v => v >= 80 && v <= 180, 'Comprueba la alcalinidad y su estabilidad con orientación técnica.']
+      ];
+      const observations = [];
+      checks.forEach(([id, name, good, advice]) => {
+        const value = numberValue(id);
+        if (value !== null && (!Number.isFinite(value) || value < 0)) observations.push(`${name}: revisa que el dato sea válido y no negativo.`);
+        else if (value !== null && !good(value)) observations.push(`${name}: ${advice}`);
+      });
+      const result = document.getElementById('diagnosisResult');
+      result.classList.add('visible');
+      result.innerHTML = `<h4>Resumen de revisión · ${document.getElementById('stage').value}</h4>` +
+        (observations.length
+          ? `<p>Hay ${observations.length} punto(s) que vale la pena revisar:</p><ul>${observations.map(x => `<li>${x}</li>`).join('')}</ul>`
+          : '<p>No se detectaron alertas preliminares en los parámetros introducidos o faltan datos para evaluarlos. Esto no confirma que el agua esté dentro de todos los rangos adecuados.</p>') +
+        '<p><strong>Importante:</strong> estos avisos son orientativos y usan referencias generales. Confirma los rangos específicos de tu especie, etapa y sistema con personal técnico.</p>';
+      result.scrollIntoView({behavior:'smooth', block:'nearest'});
+    });
+    document.getElementById('feedForm').addEventListener('submit', event => {
+      event.preventDefault();
+      const count = numberValue('count'), weight = numberValue('weight'), rate = numberValue('rate'), meals = numberValue('meals');
+      const result = document.getElementById('feedResult');
+      if (![count, weight, rate, meals].every(Number.isFinite) || count <= 0 || weight <= 0 || rate < 0 || meals <= 0) {
+        result.classList.add('visible');
+        result.innerHTML = '<h4>Revisa los datos</h4><p>Ingresa cantidades válidas y mayores que cero para el número de camarones, peso promedio y comidas. La tasa puede ser cero si corresponde a tu escenario.</p>';
+        return;
+      }
+      const biomassKg = count * weight / 1000;
+      const dailyKg = biomassKg * rate / 100;
+      const mealKg = dailyKg / meals;
+      const protein = numberValue('protein');
+      result.classList.add('visible');
+      result.innerHTML = `<h4>Ración diaria estimada</h4><div class="result-grid">
+        <div class="result-metric"><small>Biomasa estimada</small><strong>${fmt(biomassKg)} kg</strong></div>
+        <div class="result-metric"><small>Alimento por día</small><strong>${fmt(dailyKg)} kg</strong></div>
+        <div class="result-metric"><small>Alimento por comida</small><strong>${fmt(mealKg)} kg</strong></div>
+      </div><p>Alimento: ${document.getElementById('feedType').value}${protein !== null && protein >= 0 && protein <= 100 ? ` · Proteína declarada: ${fmt(protein)}%` : ''}.</p>
+      <p><strong>Nota:</strong> es una estimación matemática basada en los datos ingresados. Ajusta la ración según muestreos, consumo observado, mortalidad, calidad del agua y recomendación técnica.</p>`;
+      result.scrollIntoView({behavior:'smooth', block:'nearest'});
+    });
+  </script>
+</body>
+</html>
